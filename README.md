@@ -76,6 +76,14 @@ celery -A rubik worker -l info
 
 # 登录页
 ![](https://github.com/Jonnter/rubik/blob/master/images/login.png)
+# 菜单列表
+![](https://github.com/Jonnter/rubik/blob/master/images/menu.png)
+# 角色列表
+![](https://github.com/Jonnter/rubik/blob/master/images/menu-create.png)
+# 用户列表
+![](https://github.com/Jonnter/rubik/blob/master/images/user.png)
+# 用户创建
+![](https://github.com/Jonnter/rubik/blob/master/images/user-create.png)
 
 
 

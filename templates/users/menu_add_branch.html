@@ -1,0 +1,6 @@
+{% for menu in msg %}
+    <option value="{{ menu.id }}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ menu.name }}</option>
+{#    {% if menu.children %}#}
+{#        {% include "users/menu_add_branch.html" with msg=menu.children %}#}
+{#    {% endif %}#}
+{% endfor %}

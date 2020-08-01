@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+{% load mptt_tags %}
+{% load static %}
+{% block custom_head_css_js %}
+<style>
+    .hhDiv {
+        border: 1px solid gainsboro;
+        padding-left: 10px;
+        padding-bottom: 20px;
+        padding-top: 20px;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card">
+      <div class="card-header"><h4>{{ action }}</h4></div>
+        <div class="card-body">
+          <form class="form-horizontal" id="formData" method="post" >{% csrf_token %}
+            <div class="form-group">
+                <label for="role" class="col-sm-2 control-label"><span class="text-red">*</span>角色名称:</label>
+                <div class="col-sm-6">
+                    {{ form.name }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="role" class="col-sm-2 control-label">唯一标识:</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" name="only" value="" maxlength="15" placeholder="输入唯一标识">
+                </div>
+            </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label"><span class="text-red">*</span>功能配置:</label>
+            <div class="col-sm-8 hhDiv">
+                  <div class="table-responsive">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th>
+                          <label class="lyear-checkbox checkbox-primary">
+                            <input name="checkbox" type="checkbox" id="check-all">
+                            <span> 全选</span>
+                          </label>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    {% for key in menu_dic %}
+                      <tr>
+                        <td>
+                          <label class="lyear-checkbox checkbox-primary">
+                            <input name="menu_list" type="checkbox" class="checkbox-parent" dataid="id-{{ key.id }}" value="{{ key.id }}">
+                            <span> {{ key.name }}</span>
+                          </label>
+                        </td>
+                      </tr>
+                        {% if key.children %}
+                            {% include "users/roles_create_branch.html" with msg=key.children %}
+                        {% endif %}
+                    {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+            </div>
+            </div>
+            <div class="btn-group btn-group-justified" >
+              <div class="col-sm-2">
+                </div>
+                <div class="col-sm-2">
+                    <div class="btn-group ">
+                        <button type="submit" class="btn btn-info btn-round ">提交</button>
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="btn-group ">
+                        <a href="{% url 'users:roles-list' %}" class="btn  btn-warning btn-round ">返回</a>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                </div>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block custom_foot_js %}
+
+<script>
+$(function() {
+    //选中全部父节点
+    function checkAllParent(node){
+        $(node).find(':checkbox').prop('checked',true);
+        var parentNode = $(node).parent().siblings('.checkable');
+        if($(node).attr('data-level')==1){
+            return;
+        }
+        if(parentNode.length>0){
+            checkAllParent(parentNode)
+        }
+    }
+    //取消全部父节点
+    function uncheckAllParent(node){
+        $(node).find(':checkbox').prop('checked',false);
+        var parentNode = $(node).parent().siblings('.checkable');
+        var siblings;
+        if($(node).attr('data-level')==1){
+            return;
+        }
+        if($(node).hasClass('hasChild')){
+            siblings = $(node).parent().siblings('.child').children('label');
+        }else{
+            siblings = $(node).siblings('.checkable');
+        }
+        var isAllUnchecked = true;  //是否全部没选中
+        $(siblings).each(function(item){
+            if($(this).find(':checkbox').prop('checked')){
+                isAllUnchecked=false;
+                return ;
+            }
+        });
+        if(isAllUnchecked){
+            uncheckAllParent(parentNode);
+        }
+    }
+
+    $('.checkable').change(function(){
+        var current_checked = $(this).children(':checkbox').is(':checked');
+        var level = $(this).attr('data-level');
+        $(this).siblings('.child').find(':checkbox').prop('checked',current_checked);//设置所有子级跟随父级状态
+        if(current_checked){//checked
+            checkAllParent($(this).parent().siblings('.checkable'));
+        }else{//unchecked
+            //uncheckAllParent($(this));
+        }
+    });
+    //保存
+    $(".saveBth").on("click", function(){
+
+        var hasQx = 1;
+        $(".hhDiv input").each(function(){
+            if($(this).prop("checked")){
+                hasQx = 2;
+                return false
+            }
+        });
+        if(hasQx == 1){
+            layer.msg('请设置权限！', {icon: 2});
+            return false;
+        }
+        $("#formData").submit();
+    });
+});
+
+$(function () {
+    var inputs = $('.hhDiv input');
+    var menu_list = {{ menu }};
+<!--    console.log('menu_list',menu_list)-->
+<!--    console.log('node',{{node.id}})-->
+    for (var i = 0; i < menu_list.length; i++) {
+        inputs[du(menu_list[i]).index].checked = du(menu_list[i]).flag
+    }
+    function du(item) {
+        var obj = {
+            flag: false,
+            index: null
+        }
+        for (var i = 0; i < inputs.length; i++) {
+            if (item == inputs[i].value) {
+                obj.flag = true
+                obj.index = i;
+                return obj
+            }
+            continue
+        }
+        return obj
+    }
+});
+
+$(function(){
+    //动态选择框，上下级选中状态变化
+    $('input.checkbox-parent').on('change', function(){
+        var dataid = $(this).attr("dataid");
+        $('input[dataid^=' + dataid + '-]').prop('checked', $(this).is(':checked'));
+    });
+    $('input.checkbox-child').on('change', function(){
+        var dataid = $(this).attr("dataid");
+            dataid = dataid.substring(0, dataid.lastIndexOf("-"));
+        var parent = $('input[dataid=' + dataid + ']');
+        if($(this).is(':checked')){
+            parent.prop('checked', true);
+            //循环到顶级
+            while(dataid.lastIndexOf("-") != 2){
+                dataid = dataid.substring(0, dataid.lastIndexOf("-"));
+                parent = $('input[dataid=' + dataid + ']');
+                parent.prop('checked', true);
+            }
+        }else{
+            //父级
+            if($('input[dataid^=' + dataid + '-]:checked').length == 0){
+                parent.prop('checked', false);
+                //循环到顶级
+                while(dataid.lastIndexOf("-") != 2){
+                    dataid = dataid.substring(0, dataid.lastIndexOf("-"));
+                    parent = $('input[dataid=' + dataid + ']');
+                    if($('input[dataid^=' + dataid + '-]:checked').length == 0){
+                        parent.prop('checked', false);
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

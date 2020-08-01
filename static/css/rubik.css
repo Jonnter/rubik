@@ -1,0 +1,51 @@
+@charset "UTF-8";
+
+.text-red {
+  color: #f96868;
+}
+
+ul.errorlist {
+    color:#f96868 !important;
+}
+
+/* 联动插件验证新增 */
+.has-error .d-inline-block .form-control {
+    border-color: #ebebeb!important;
+    box-shadow: none!important
+}
+.has-error .d-inline-block.is-invalid .form-control {
+    border-color: #f96868!important;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075)!important;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075)!important;
+}
+
+/* select插件 */
+.lyear-select {
+    position: relative;
+}
+.lyear-select .form-control {
+    background-color: #fff!important;
+    cursor: pointer;
+}
+.lyear-select .dropdown-menu {
+    min-width: 100%;
+    max-height: 300px;
+    overflow-y: auto;
+}
+.lyear-select .dropdown-menu a {
+    cursor: pointer;
+}
+.lyear-select .dropdown-menu li.selected a,
+.lyear-select .dropdown-menu li.selected:hover a {
+    background-color: #33cabb;
+    color: #fff;
+}
+.lyear-select .form-control {
+    padding-right: 30px;
+}
+.lyear-select i.mdi {
+    font-size: 20px;
+    position: absolute;
+    top: 3px;
+    right: 5px;
+}

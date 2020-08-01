@@ -1,0 +1,31 @@
+{% load static %}
+<aside class="lyear-layout-sidebar">
+  <div id="logo" class="sidebar-header">
+    <a href="#"><img src="{% static 'images/logo-sidebar.png' %}" title="LightYear" alt="LightYear" /></a>
+  </div>
+  <div class="lyear-layout-sidebar-scroll">
+
+    <nav class="sidebar-main">
+      <ul class="nav nav-drawer">
+        <li class="nav-item"> <a href="/" id="dashboard"><i class="mdi mdi-home"></i> 仪表盘</a> </li>
+        {% for key in menu_dic %}
+        <li class="nav-item nav-item-has-subnav" id="{{ key.only }}">
+          <a href="javascript:void(0)"><i class="mdi {{ key.icon }}"></i> <span>{{ key.name }}</span></a>
+          <ul class="nav nav-subnav">
+            {% for i in key.children %}
+            <li><a href="{{ i.url }}">{{ i.name }}</a></li>
+            {% endfor %}
+          </ul>
+        </li>
+        {% endfor %}
+        {% if adminname == 'admin' %}
+        <li class="nav-item" id="setting"> <a href="/system/"><i class="mdi mdi-settings"></i> 系统设置</a> </li>
+        {% endif %}
+      </ul>
+    </nav>
+    <div class="sidebar-footer">
+      <p class="copyright">Copyright &copy; 2019-2020</p>
+    </div>
+  </div>
+
+</aside>

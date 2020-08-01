@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% load mptt_tags %}
+{% load static %}
+{% block custom_head_css_js %}
+<link href="{% static 'plugins/nestable/nestable.css' %}" rel="stylesheet" >
+<link href="{% static 'plugins/layer/dist/theme/default/layer.css' %}" rel="stylesheet" >
+<link href="{% static 'plugins/fontIconPicker/css/jquery.fonticonpicker.min.css' %}" rel="stylesheet" >
+<link href="{% static 'plugins/fontIconPicker/themes/bootstrap-theme/jquery.fonticonpicker.bootstrap.min.css' %}" rel="stylesheet" >
+{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header"><h4>{{ action }}</h4></div>
+            <div class="card-body">
+               <div class="box-header">
+                    <div class="dd">
+                    {% for key in menu_dic %}
+                    <ol class="dd-list">
+                        <li class="dd-item " data-id="{{ key.id }}">
+                        <div class="dd-handle ">
+                        <i class="mdi {{ key.icon }}"></i>
+                            &nbsp;<strong>{{ key.id }} -- {{ key.name }}</strong>&nbsp;&nbsp;&nbsp;<a href="{{ key.url }}" class="dd-nodrag">{{ key.url }}</a>
+                            <span class="pull-right dd-nodrag">
+                                <a href="{% url 'users:menu-edit' pk=key.id %}"><i class="mdi mdi-pencil" data-toggle="tooltip" data-placement="bottom"  data-original-title="编辑"></i></a>
+                                <a href="javascript:void(0);" data-id="{{ key.id }}" class="tree_branch_delete" data-toggle="tooltip" data-placement="bottom"  data-original-title="删除"><i class="mdi mdi-delete"></i></a>
+                            </span>
+                        </div>
+                        {% if key.children %}
+                            {% include "users/menu_branch.html" with msg=key.children %}
+                        {% endif %}
+
+                        </li>
+                    </ol>
+                    {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header"><h4>新增</h4></div>
+                <div class="card-body">
+                    <div class="box-body" style="display: block;">
+                        <form method="POST" action="{% url 'users:menu-create' %}" class="form-horizontal" accept-charset="UTF-8">{% csrf_token %}
+                            <div class="form-group  ">
+                                <label for="parent_id" class="col-sm-2 control-label">父级菜单</label>
+                                <div class="col-sm-8">
+                                    <select name="parent" class="form-control parent_id" style="width: 100%" id="id_parent">
+                                      <option value="" selected>ROOT</option>
+                                        {% for key in menu_dic %}
+                                          <option value="{{ key.id }}">&nbsp;&nbsp;&nbsp;&nbsp;{{ key.name }}</option>
+                                            {% if key.children %}
+                                                {% include "users/menu_add_branch.html" with msg=key.children %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group  ">
+                                <label for="title" class="col-sm-2 control-label">标题</label>
+                                <div class="col-sm-8">
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="mdi mdi-grease-pencil"></i></span>
+                                        <input type="text" name="name" class="form-control title" name="name" placeholder="输入 标题" maxlength="32" id="id_name">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="icon" class="col-sm-2 control-label">图标</label>
+                                <div class="col-sm-8">
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="mdi mdi-grease-pencil"></i></span>
+                                        <input type="text" name="icon" class="form-control title" name="icon-example" id="icon-example">
+                                    </div>
+                                    <span class="help-block">
+                                        <i class="mdi mdi-sort-variant"></i>&nbsp;For more icons please see <a href="https://www.materialpalette.com/icons/" target="_blank">https://www.materialpalette.com/icons/</a>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="uri" class="col-sm-2 control-label">路径</label>
+                                <div class="col-sm-8">
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="mdi mdi-grease-pencil"></i></span>
+                                        <input type="text" name="url" class="form-control uri" name="url" id="uri" value="" placeholder="输入 路径" maxlength="255">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="only" class="col-sm-2 control-label">标识</label>
+                                <div class="col-sm-8">
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="mdi mdi-grease-pencil"></i></span>
+                                        <input type="text" name="only" id="only" name="only" value="" class="form-control uri" placeholder="输入 标识" maxlength="64" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="wight" class="col-sm-2 control-label">权重</label>
+                                <div class="col-sm-8">
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="mdi mdi-grease-pencil"></i></span>
+                                        <input type="text" name="wight" id="wight" name="wight" value="" class="form-control uri" placeholder="输入 权重" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="type" class="col-sm-2 control-label">类型</label>
+                                <div class="col-sm-8">
+                                    <div class="input-group">
+                                        <div class="radio">
+                                            <ul id="id_type">
+                                                <li><label for="id_type_0"><input type="radio" name="type" value="1" type="radio" name="type" required id="id_type_0" checked>
+                                             菜单</label>
+
+                                            </li>
+                                                <li><label for="id_type_1"><input type="radio" name="type" value="2" type="radio" name="type" required id="id_type_1">
+                                             操作</label>
+
+                                            </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="status" class="col-sm-2 control-label">状态</label>
+                                <div class="col-sm-8">
+                                    <div class="input-group">
+                                        <div class="radio">
+                                            <ul id="id_is_state">
+                                                <li><label for="id_is_state_0"><input type="radio" name="is_state" value="0" type="radio" name="is_state" required id="id_is_state_0">
+                                                     禁用</label>
+
+                                                </li>
+                                                <li><label for="id_is_state_1"><input type="radio" name="is_state" value="1" type="radio" name="is_state" required id="id_is_state_1" checked>
+                                                    启用</label>
+
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <div class=" form-group" >
+                            <div class="col-md-3">
+                            </div>
+                            <div class="col-md-3">
+                                <div class="btn-group center-block">
+                                    <button type="submit" class="btn btn-info btn-round ">提交</button>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="btn-group center-block">
+                                    <button type="reset" class="btn btn-warning btn-round">撤销</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block custom_foot_js %}
+{% csrf_token %}
+<script src="{% static 'plugins/nestable/jquery.nestable.js' %}"></script>
+<script src="{% static 'plugins/fontIconPicker/jquery.fonticonpicker.min.js' %}"></script>
+<script type="text/javascript">
+$(function () {
+    $('.dd').nestable();
+    $('.tree_branch_delete').click(function() {
+        var id = $(this).data('id');
+
+        if(id){
+            layer.confirm('确认删除?', {icon: 3}, function(index){
+                $.ajax({
+                    method: 'POST',
+                    url: "/users/menu/del/",
+                    headers:{"X-CSRFToken":csrftoken},
+                    data: {
+                        id:id
+                    },
+                    success: function (data) {
+                        if(data){
+                            location.reload();
+                        }else{
+                            layer.msg(data.msg);
+                        }
+                    }
+                });
+            });
+        }
+    });
+});
+
+jQuery(document).ready(function($) {
+    var font_element = $('#icon-example').fontIconPicker({
+        theme: 'fip-bootstrap'
+    });
+
+    $.ajax({
+        url: "{% static 'plugins/fontIconPicker/fontjson/materialdesignicons.json' %}",
+        type: 'GET',
+        dataType: 'json'
+    }).done(function(response) {
+
+        var fontello_json_icons = [];
+
+        $.each(response.glyphs, function(i, v) {
+            fontello_json_icons.push( v.css );
+        });
+
+        font_element.setIcons(fontello_json_icons);
+    }).fail(function() {
+        console.error('字体图标配置加载失败');
+    });
+
+    $(document).on('change', '#icon-example', function(){
+        $('#show-mdi').html($(this).val());
+    });
+
+});
+</script>
+{% endblock %}

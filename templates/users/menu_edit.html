@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load mptt_tags %}
+{% load static %}
+{% block custom_head_css_js %}
+<link href="{% static 'plugins/nestable/nestable.css' %}" rel="stylesheet" >
+{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header"><h4>{{ action }}</h4></div>
+                <div class="card-body">
+                    <div class="box box-primary">
+                    {{ form.errors }}
+                    <form class="form-horizontal" method="post">{% csrf_token %}
+                        <div class="box-body fields-group">
+                        <div class="form-group  ">
+                                <label for="parent_id" class="col-sm-2 control-label">父级菜单</label>
+                                <div class="col-sm-8">
+                                    {{ form.parent }}
+                                </div>
+                            </div>
+                            <div class="form-group  ">
+                                <label for="title" class="col-sm-2 control-label">标题</label>
+                                <div class="col-sm-8">
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="mdi mdi-grease-pencil"></i></span>
+                                        {{ form.name }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="icon" class="col-sm-2 control-label">图标</label>
+                                <div class="col-sm-8">
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="mdi mdi-grease-pencil"></i></span>
+                                        {{ form.icon }}
+                                    </div>
+                                    <span class="help-block">
+                                        <i class="mdi mdi-sort-variant"></i>&nbsp;For more icons please see <a href="https://www.materialpalette.com/icons/" target="_blank">https://www.materialpalette.com/icons/</a>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group  ">
+                                <label for="uri" class="col-sm-2 control-label">路径</label>
+                                <div class="col-sm-8">
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="mdi mdi-grease-pencil"></i></span>
+                                        {{ form.url }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group  ">
+                                <label for="only" class="col-sm-2 control-label">标识</label>
+                                <div class="col-sm-8">
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="mdi mdi-grease-pencil"></i></span>
+                                        {{ form.only }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group  ">
+                                <label for="wight" class="col-sm-2 control-label">权重</label>
+                                <div class="col-sm-8">
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="mdi mdi-grease-pencil"></i></span>
+                                        {{ form.wight }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group  ">
+                                <label for="type" class="col-sm-2 control-label">类型</label>
+                                <div class="col-sm-8">
+                                    <div class="input-group">
+                                        <div class="radio">
+                                            {{ form.type }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group  ">
+                                <label for="status" class="col-sm-2 control-label">状态</label>
+                                <div class="col-sm-8">
+                                    <div class="input-group">
+                                        <div class="radio">
+                                            {{ form.is_state }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-group btn-group-justified" >
+                            <div class="center-block">
+                                <div class="btn-group pull-right">
+                                    <button type="submit" class="btn btn-info pull-left btn-round">保存</button>
+                                </div>
+                            </div>
+                            <div class="center-block">
+                                <div class="btn-group pull-left">
+                                    <a href="{% url 'users:menu-list' %}" class="btn btn-warning btn-round ">返回</a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block custom_foot_js %}
+<script src="{% static 'plugins/nestable/jquery.nestable.js' %}"></script>
+{% endblock %}

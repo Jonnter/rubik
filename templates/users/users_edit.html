@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block custom_head_css_js %}
+<link rel="stylesheet" type="text/css" href="http://libs.itshubao.com/webuploader/webuploader.css">
+<link rel="stylesheet" type="text/css" href="http://libs.itshubao.com/magnific-popup/magnific-popup.min.css">
+{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header"><h4>{{ action }}</h4></div>
+            <div class="card-body">
+                <div class="edit-avatar">
+                    <img src="/static/images/users/{{ user.avatar }}" alt="..." class="img-avatar">
+                    <div class="avatar-divider"></div>
+                    <div class="edit-avatar-content js-upload-image">
+                        <input type="hidden" name="one_pic"  id="one_pic" value="">
+                        <div id="picker_one_pic">修改头像</div>
+                        <p class="m-0">选择一张你喜欢的图片，裁剪后会自动生成264x264大小，上传图片大小不能超过2M。</p>
+                    </div>
+                </div>
+                <hr>
+                <form class="site-form" method="post">{% csrf_token %}
+
+                    <div class="form-group">
+                        <label for="role_id">角色</label>
+                        {{ form.roles }}
+                    </div>
+                    <div class="form-group">
+                        <label for="username">用户名</label>
+                        {{ form.username }}
+                    </div>
+                    <div class="form-group">
+                        <label for="password">密码:</label>
+                            {{ form.password }}
+                        <span class="text-danger">* 不填写密码，默认为不修改</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="nickname">真实姓名</label>
+                        {{ form.name }}
+                    </div>
+                    <div class="form-group">
+                        <label for="email">邮箱</label>
+                        {{ form.email }}
+                        <small id="emailHelp" class="form-text text-muted">请保证您填写的邮箱地址是正确的。</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="mobile">手机号</label>
+                        {{ form.mobile }}
+                    </div>
+                    <div class="form-group">
+                        <label for="create-date">创建日期</label>
+                        <input type="datetime" class="form-control" name="create-date" id="create-date"  disabled="disabled" value="{{ object.create_date }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-date">登陆日期</label>
+                        <input type="datetime" class="form-control" name="login-date" id="login-date" disabled="disabled" value="{{ object.last_login }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="remark">简介</label>
+                        {{ form.comment }}
+                    </div>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block custom_foot_js %}
+<script type="text/javascript" src="http://libs.itshubao.com/webuploader/webuploader.min.js"></script>
+<script type="text/javascript" src="http://libs.itshubao.com/magnific-popup/jquery.magnific-popup.min.js"></script>
+{% csrf_token %}
+<script>
+$(function() {
+    /*
+     * 示例上传成功采用返回ID的形式，即上传成功以附件表形式存储，返回给前端ID值。
+     * 成功返回示例：{"status":200,"info":"成功","class":"success","id":1,"picurl":".\/upload\/images\/lyear_5ddfc00174bbb.jpg"}
+     * 这里设定单图上传为js-upload-image，多图上传为js-upload-images
+     * 存放预览图的div元素，命名：file_list_*；后面的上传按钮的命名：filePicker_*（这里的*跟隐藏的input的name对应）。方便单页面中存在有多个上传时区分以及使用。
+     * input上保存上传后的图片ID以及设置上传时的一些参数，
+     */
+
+    // 通用绑定，
+    $('.js-upload-image').each(function() {
+        var $input_file      = $(this).find('input'),
+            $input_file_name = $input_file.attr('name'),
+            $ext             = $input_file.data('ext'),       // 支持的文件后缀，示例以图片为例
+            $size            = $input_file.data('size');      // 支持最大的文件大小
+        var $file_list = $('#file_list_' + $input_file_name);
+        var ratio = window.devicePixelRatio || 1;
+        var thumbnailWidth = 165 * ratio;
+        var thumbnailHeight = 110 * ratio;
+
+        var uploader = WebUploader.create({
+            auto: true,
+            duplicate: true,
+            resize: false,
+            swf: './js/webuploader/Uploader.swf',
+            headers:{"X-CSRFToken":csrftoken},
+            server: '{% url 'users:users-edit-upload' %}',
+            pick: {
+                id: '#picker_' + $input_file_name,
+            },
+
+            fileSingleSizeLimit: $size,
+            accept: {
+                title: 'Images',
+                extensions: $ext,
+                mimeTypes: 'image/*'
+            }
+        });
+
+        uploader.on('fileQueued', function(file) {
+
+            var $li = $('<li class="col-xs-6 col-sm-3 col-md-2 pic-item" id="' + file.id + '">' +
+                        '  <figure>' +
+                        '    <img>' +
+                        '    <figcaption>' +
+                        '      <a class="btn btn-round btn-square btn-primary btn-link-pic" href="#!"><i class="mdi mdi-eye"></i></a>' +
+                        '      <a class="btn btn-round btn-square btn-danger btn-remove-pic" href="#!"><i class="mdi mdi-delete"></i></a>' +
+                        '    </figcaption>' +
+                        '  </figure>' +
+                        '</li>'),
+                $img = $li.find('img');
+            uploader.makeThumb(file, function(error, src) {
+                if (error) {
+                    $img.replaceWith('<span>不能预览</span>');
+                    return;
+                }
+                $('.img-avatar').attr('src', src);
+            }, thumbnailWidth, thumbnailHeight);
+            $('<div class="progress progress-sm"><div class="progress-bar progress-bar-primary progress-bar-striped" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div></div>').appendTo($li);
+        });
+
+    });
+});
+</script>
+{% endblock %}

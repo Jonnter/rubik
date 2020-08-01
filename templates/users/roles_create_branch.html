@@ -1,0 +1,13 @@
+{% for child in msg %}
+<tr>
+    <td class="p-l-20">
+        <label class="lyear-checkbox checkbox-primary">
+            <input name="menu_list" type="checkbox" class="checkbox-parent checkbox-child" dataid="id-{{ child.parent_id }}-{{ child.id }}" value="{{ child.id }}">
+            <span> {{ child.name }}</span>
+        </label>
+    </td>
+</tr>
+    {% if child.children %}
+        {% include "users/roles_create_branch2.html" with msg=child.children %}
+    {% endif %}
+{% endfor %}

@@ -1,0 +1,1 @@
+libz-dev libjpeg-dev libfreetype6-dev python-dev redis

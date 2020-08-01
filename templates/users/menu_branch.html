@@ -1,0 +1,16 @@
+{% for menu in msg %}
+<ol class="dd-list">
+    <li class="dd-item" data-id="{{ menu.id }}">
+        <div class="dd-handle">
+            &nbsp;<strong>{{ menu.id }} -- {{ menu.name }}</strong>&nbsp;&nbsp;&nbsp;<a href="{{ menu.url }}" class="dd-nodrag">{{ menu.url }}</a>
+            <span class="pull-right dd-nodrag">
+                <a href="{% url 'users:menu-edit' pk=menu.id %}"><i class="mdi mdi-pencil" data-toggle="tooltip" data-placement="bottom"  data-original-title="编辑"></i></a>
+                <a href="javascript:void(0);" data-id="{{ menu.id }}" class="tree_branch_delete" data-toggle="tooltip" data-placement="bottom"  data-original-title="删除"><i class="mdi mdi-delete"></i></a>
+            </span>
+        </div>
+    </li>
+    {% if menu.children %}
+        {% include "users/menu_branch.html" with msg=menu.children %}
+    {% endif %}
+</ol>
+{% endfor %}

@@ -1,0 +1,10 @@
+<tr>
+    <td class="p-l-40">
+    {% for child3 in msg %}
+        <label class="lyear-checkbox checkbox-primary checkbox-inline">
+            <input name="menu_list" type="checkbox" class="checkbox-child" dataid="id-{{ key.id }}-{{ child3.parent_id }}-{{ child3.id }}" value="{{ child3.id }}">
+            <span> {{ child3.name }}</span>
+        </label>
+    {% endfor %}
+    </td>
+</tr>

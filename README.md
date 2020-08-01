@@ -72,7 +72,12 @@ celery -A rubik worker -l info
 
 * 初始化账户密码
 > 账号：admin
-> 密码：123456
+> 密码：123456  
+
+# 登录页
+![](https://github.com/Jonnter/rubik/blob/master/images/login.png)
+
+
 
 ####作者
 * Godan

@@ -1,7 +1,6 @@
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.contrib.auth.models import AbstractUser,BaseUserManager
-from mptt.models import MPTTModel,TreeForeignKey
 import uuid
 
 # Create your models here.
